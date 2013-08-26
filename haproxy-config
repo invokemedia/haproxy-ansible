@@ -1,0 +1,42 @@
+global
+        log /dev/log local0 info
+        log /dev/log local1 notice
+        chroot /var/lib/haproxy
+        user haproxy
+        group haproxy
+        daemon
+
+defaults
+        log     global
+        mode    http
+        option  httplog
+        option  dontlognull
+        option  http-server-close
+        option  redispatch
+        contimeout 5000
+        clitimeout 50000
+        srvtimeout 50000
+
+frontend web
+        bind 0.0.0.0:80
+        acl api path_beg /api
+        use_backend api if api
+        default_backend web
+
+frontend ssl
+        bind 0.0.0.0:443 ssl crt /etc/haproxy/certificate.pem
+        acl api path_beg /api
+        use_backend api if api
+        default_backend web
+
+backend web
+        server 1 www.example.com:80
+
+backend api
+        reqrep ^([^\ ]*\ /)api[/]?(.*)     \1\2
+        server 1 api.example.com:443 ssl
+
+listen stats :82
+        stats   enable
+        stats   refresh 10s
+        stats   uri /

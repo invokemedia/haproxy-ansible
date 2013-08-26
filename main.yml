@@ -1,0 +1,34 @@
+---
+- hosts: haproxy
+  user: ubuntu
+  sudo: True
+
+  tasks:
+    - name: install haproxy ppa
+      action: apt_repository repo='deb http://ppa.launchpad.net/nilya/haproxy-1.5/ubuntu quantal main' state=present
+
+    - name: install haproxy
+      action: apt name=haproxy state=installed update_cache=yes
+
+    - name: enable haproxy
+      action: template src=haproxy-default dest=/etc/default/haproxy
+      notify:
+        - restart haproxy
+
+    - name: configure haproxy
+      action: template src=haproxy-config dest=/etc/haproxy/haproxy.cfg
+      notify:
+        - restart haproxy
+        - restart rsyslog
+
+    - name: upload ssl pem
+      action: template src=certificate.pem dest=/etc/haproxy/certificate.pem
+      notify:
+        - restart haproxy
+
+  handlers:
+    - name: restart haproxy
+      action: service name=haproxy state=restarted
+
+    - name: restart rsyslog
+      action: service name=rsyslog state=restarted
