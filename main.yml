@@ -1,6 +1,5 @@
 ---
 - hosts: haproxy
-  user: ubuntu
   sudo: True
 
   tasks:

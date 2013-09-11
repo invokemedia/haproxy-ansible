@@ -30,11 +30,11 @@ frontend ssl
         default_backend web
 
 backend web
-        server 1 www.example.com:80
+        server 1 {{ www_url}}:80
 
 backend api
         reqrep ^([^\ ]*\ /)api[/]?(.*)     \1\2
-        server 1 api.example.com:443 ssl
+        server 1 {{ api_url }}:443 ssl
 
 listen stats :82
         stats   enable

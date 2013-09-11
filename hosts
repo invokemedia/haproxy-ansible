@@ -1,2 +1,2 @@
 [haproxy]
-proxy.example.com
+proxy.example.com ansible_ssh_user=ubuntu www_url=dev.example.com api_url=api.example.com
